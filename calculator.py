@@ -1,117 +1,125 @@
 import tkinter as tk
 from tkinter import messagebox
 
-AFCOLOR = 'green'
-FCOLOR = 'red'
-px = 2
-py = 2
-BD = 3
-F = 18
-BG = '#3FBFD2'
+AFCOLOR = 'green' # цвет текста кнопки при наведении мыши
+FCOLOR = 'red'    # цвет текста кнопки
+px = 2            # отступ по х
+py = 2            # отступ по у
+BD = 3            # граница
+F = 18            # размер шрифта
+BG = '#3FBFD2'    # цвет окна root
 
+
+"""Функция добавления цифры на экран screen"""
 def add_digit(num):
-    value = screen.get()
-    if value[0] == '0' and len(value) == 1:
+    value = screen.get()                    # считываем содержимое экрана
+    if value[0] == '0' and len(value) == 1: # если там только ноль, то берем содержимое без него
         value = value[1:]
-    screen.delete(0, tk.END)
-    screen.insert(0, value + str(num))
+    screen.delete(0, tk.END)                # удаляем содержимое экрана
+    screen.insert(0, value + str(num))      # вставляем содержимое с добавлением цифры-значения кнопки
 
-
+"""Функция добавления операции на экран screen"""
 def add_operation(operation):
-    value = screen.get()
-    if value[-1] in '+-*/=':
-        value = value[:-1]
+    value = screen.get()                     # считываем содержимое экрана
+    if value[-1] in '+-*/=':                 # если последний знак содержимого уже есть знак какой то операции
+        value = value[:-1]                   # то удаляем его из содержимого экрана, чтоб не было знака за знаком
     elif '+' in value or '-' in value or '*' in value or '/' in value:
-        make_calc()
-        value = screen.get()
-    value += operation
-    screen.delete(0, tk.END)
-    screen.insert(0, value)
+        make_calc()                          # если в содержимом уже есть знак операции не на последнем месте
+        value = screen.get()                 # тогда вызываем функцию make_calc() для производства вычисления и считываем данные с экрана
+    value += operation                       # если знаков нет в содержимом экрана, то добавляем в конец символ операции кнопки
+    screen.delete(0, tk.END)                 # удаляем содержимое экрана
+    screen.insert(0, value)                  # вставляем содержимое с добавлением цифры-значения кнопки
 
-
+"""Функция выполнения вычислений"""
 def make_calc():
-    value = screen.get()
-    if value[-2] == '/' and value[-1] == '0':
-        value = value[:-1]
-        screen.delete(0, tk.END)
-        screen.insert(0, value)
+    value = screen.get()                       # считываем содержимое экрана
+    if value[-2] == '/' and value[-1] == '0':  # проверяем на запись деления на ноль
+        value = value[:-1]                     # если проверка проходит - удаляем последний символ ноля из содержимого экрана
+        screen.delete(0, tk.END)               # удаляем содержимое экрана
+        screen.insert(0, value)                # вставляем содержимое с добавлением цифры-значения кнопки
     else:
-        if value[-1] in '+-*/':
-            value = value + value[:-1]
-        screen.delete(0, tk.END)
+        if value[-1] in '+-*/':                # если последний символ содержимого экрана знак операции и потом нажимается кнопка '='
+            value = value + value[:-1]         # тогда к содержимому экрана добавляется еще раз содержимое экрана, но без последнего символа операции
+        screen.delete(0, tk.END)               # удаляем содержимое экрана
         try:
-            screen.insert(0, eval(value))
-        except (NameError, SyntaxError):
+            screen.insert(0, eval(value))      # добавляем на екран результат функции eval(value)
+        except (NameError, SyntaxError):       # в случае ошибок появится окно с предупреждением (messagebox)
             messagebox.showinfo('Внимание', 'На ноль делить нельзя')
-            screen.insert(0, 0)
-        except ZeroDivisionError:
+            screen.insert(0, 0)                # на экран выводим ноль
+        except ZeroDivisionError:              # в случае ошибок появится окно с предупреждением (messagebox)
             messagebox.showerror('Внимание', 'Ведите цифры')
-            screen.insert(0, 0)
+            screen.insert(0, 0)                # на экран выводим ноль
 
+"""функция очистки экрана"""
 def clean_calc():
     screen.delete(0, tk.END)
     screen.insert(0, '0')
 
-
+"""Функция добавления кнопок с цифрами"""
 def add_digit_button(digit):
     return tk.Button(root,
-                     font=('Arial', F),
-                     text=str(digit),
-                     bd=BD,
-                     command=lambda: add_digit(digit))
+                     font=('Arial', F),                 # шрифт кнопки
+                     text=str(digit),                   # добавляем символ цифры на кнопку
+                     bd=BD,                             # розмер граници кнопки
+                     command=lambda: add_digit(digit))  # в качестве исполняемой операции через lambda вызываем функцию add_digit()
+                                                        # lambda - чтоб функция add_digit() не выполнялась сразу при создании кнопки
 
-
+"""Функция добавления кнопок операций"""
 def add_operation_button(operation):
     return tk.Button(root,
-                     font=('Arial', F),
-                     text=operation,
-                     activeforeground=AFCOLOR,
-                     fg=FCOLOR,
-                     bd=BD,
-                     command=lambda: add_operation(operation))
+                     font=('Arial', F),                         # шрифт кнопки
+                     text=operation,                            # добавляем символ цифры на кнопку
+                     activeforeground=AFCOLOR,                  # цвет текста кнопки при наведении курсора мыши
+                     fg=FCOLOR,                                 # цвет текста кнопки
+                     bd=BD,                                     # розмер граници кнопки
+                     command=lambda: add_operation(operation))  # в качестве исполняемой операции через lambda вызываем функцию add_operation()
+                                                                # lambda - чтоб функция add_operation() не выполнялась сразу при создании кнопки
 
-
+"""Функция добавления кнопки '=' - выполнение вычисления"""
 def add_calc_button(operation):
     return tk.Button(root,
-                     font=('Arial', F),
-                     text=operation,
-                     activeforeground=AFCOLOR,
-                     fg=FCOLOR,
-                     bd=BD,
-                     command=lambda: make_calc())
+                     font=('Arial', F),                 # шрифт кнопки
+                     text=operation,                    # добавляем символ цифры на кнопку
+                     activeforeground=AFCOLOR,          # цвет текста кнопки при наведении курсора мыши
+                     fg=FCOLOR,                         # цвет текста кнопки
+                     bd=BD,                             # розмер граници кнопки
+                     command=lambda: make_calc())       # в качестве исполняемой операции через lambda вызываем функцию make_calc()
+                                                        # lambda - чтоб функция make_calc() не выполнялась сразу при создании кнопки
 
-
+"""Функция добавления кнопки очистки экрана"""
 def add_clean_button(operation):
     return tk.Button(root,
-                     font=('Arial', F),
-                     text=operation,
-                     activeforeground=AFCOLOR,
-                     fg=FCOLOR,
-                     bd=BD,
-                     command=lambda: clean_calc())
+                     font=('Arial', F),                 # шрифт кнопки
+                     text=operation,                    # добавляем символ цифры на кнопку
+                     activeforeground=AFCOLOR,          # цвет текста кнопки при наведении курсора мыши
+                     fg=FCOLOR,                         # цвет текста кнопки
+                     bd=BD,                             # розмер граници кнопки
+                     command=lambda: clean_calc())      # в качестве исполняемой операции через lambda вызываем функцию clean_calc()
+                                                        # lambda - чтоб функция clean_calc() не выполнялась сразу при создании кнопки
 
-
+"""Функция для набора цифр и операций с клавиатуры"""
 def press_key(event):
-    if event.char.isdigit():
-        add_digit(event.char)
-    elif event.char in '+-*/':
-        add_operation(event.char)
-    elif event.char == '=' or event.char == '\r':
-        make_calc()
+    if event.char.isdigit():                      # Если в пришедшем событии есть символ цифры
+        add_digit(event.char)                     # Тогда выполняется функция add_digit(символ_цифры)
+    elif event.char in '+-*/':                    # Если в пришедшем событии есть символ операции
+        add_operation(event.char)                 # Тогда выполняется функция add_operation(символ_операции)
+    elif event.char == '=' or event.char == '\r': # Если в пришедшем событии есть символ '=' или нажат Enter
+        make_calc()                               # Тогда выполняется функция make_calc()
 
 
-root = tk.Tk()
-root.geometry('270x310+500+200')
-root.title('Калькулятор')
-root.config(bg=BG)
-root.bind('<Key>', press_key)
+root = tk.Tk()                     # Создаем главное окно
+root.geometry('270x310+500+200')   # задаем размеры главного окна
+root.resizable(False, False)       # делаем окно неизменяемых размеров
+root.title('Калькулятор')          # задаем титульную надпись главного окна
+root.config(bg=BG)                 # задаем цвет главного окна
+root.bind('<Key>', press_key)      # задаем слушатель событий - какие событыя слышать и что выполнять (слушает нажатие кнопок на клавиатуре)
 
 
-screen = tk.Entry(root, font=('Arial', 20), width=17, bd=BD, justify=tk.RIGHT)
-screen.insert(0, '0')
-screen.grid(row=0, column=0, columnspan=4, stick='we', padx=px, pady=py)
+screen = tk.Entry(root, font=('Arial', 20), width=17, bd=BD, justify=tk.RIGHT) # Создаем екран калькулятора
+screen.insert(0, '0')                                                          # устанавливаем изначально ноль
+screen.grid(row=0, column=0, columnspan=4, stick='we', padx=px, pady=py)       # задаем параметры расположения екрана
 
-add_digit_button(1).grid(row=1, column=0, stick='wnes', padx=px, pady=py)
+add_digit_button(1).grid(row=1, column=0, stick='wnes', padx=px, pady=py)  # создаем кнопки с цифрами
 add_digit_button(2).grid(row=1, column=1, stick='wnes', padx=px, pady=py)
 add_digit_button(3).grid(row=1, column=2, stick='wnes', padx=px, pady=py)
 add_digit_button(4).grid(row=2, column=0, stick='wnes', padx=px, pady=py)
@@ -122,23 +130,23 @@ add_digit_button(8).grid(row=3, column=1, stick='wnes', padx=px, pady=py)
 add_digit_button(9).grid(row=3, column=2, stick='wnes', padx=px, pady=py)
 add_digit_button(0).grid(row=4, column=0, stick='wnes', padx=px, pady=py)
 
-add_operation_button('+').grid(row=1, column=3, stick='wnes', padx=px, pady=py)
+add_operation_button('+').grid(row=1, column=3, stick='wnes', padx=px, pady=py) # создаем кнопки с операциями
 add_operation_button('-').grid(row=2, column=3, stick='wnes', padx=px, pady=py)
 add_operation_button('/').grid(row=3, column=3, stick='wnes', padx=px, pady=py)
 add_operation_button('*').grid(row=4, column=3, stick='wnes', padx=px, pady=py)
 
-add_clean_button('C').grid(row=4, column=1, stick='wnes', padx=px, pady=py)
-add_calc_button('=').grid(row=4, column=2, stick='wnes', padx=px, pady=py)
+add_clean_button('C').grid(row=4, column=1, stick='wnes', padx=px, pady=py) # создаем кнопку очистки экрана
+add_calc_button('=').grid(row=4, column=2, stick='wnes', padx=px, pady=py)  # создаем кнопку '='
 
-root.grid_columnconfigure(0, minsize=60)
+root.grid_columnconfigure(0, minsize=60)  # задаем минимальные размеры столбцов
 root.grid_columnconfigure(1, minsize=60)
 root.grid_columnconfigure(2, minsize=60)
 root.grid_columnconfigure(3, minsize=60)
 
-root.grid_rowconfigure(0, minsize=60)
+root.grid_rowconfigure(0, minsize=60)     # задаем минимальные размены строк
 root.grid_rowconfigure(1, minsize=60)
 root.grid_rowconfigure(2, minsize=60)
 root.grid_rowconfigure(3, minsize=60)
 root.grid_rowconfigure(4, minsize=60)
 
-root.mainloop()
+root.mainloop()                           # цикл главного окна
