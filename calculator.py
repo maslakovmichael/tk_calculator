@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 AFCOLOR = 'green' # цвет текста кнопки при наведении мыши
-FCOLOR = 'red'    # цвет текста кнопки
+FCOLOR = 'blue'   # цвет текста кнопки
 px = 2            # отступ по х
 py = 2            # отступ по у
 BD = 3            # граница
@@ -17,6 +17,20 @@ def add_digit(num):
         value = value[1:]
     screen.delete(0, tk.END)                # удаляем содержимое экрана
     screen.insert(0, value + str(num))      # вставляем содержимое с добавлением цифры-значения кнопки
+
+"""Функция добавлени точки"""
+def add_dot(operation):
+    value = screen.get()           # считываем содержимое экрана
+    if value[-1] == '.':           # если эта точка стоит в последним символом
+        value = value[:-1]         # тогда убираем эту точку
+        value += operation         # иначе если точки в содержимом нет - то добавляем ее
+    elif '.' in value:             # если точка уже есть в содержимом экрана
+        value = value              # если точка в содержимом есть, но она не в конце, то ничего не добавится
+    else:
+        value += operation         # иначе если точки в содержимом нет - то добавляем ее
+    screen.delete(0, tk.END)       # удаляем содержимое экрана
+    screen.insert(0, value)        # вставляем содержимое с добавлением цифры-значения кнопки
+
 
 """Функция добавления операции на экран screen"""
 def add_operation(operation):
@@ -67,13 +81,24 @@ def add_digit_button(digit):
 """Функция добавления кнопок операций"""
 def add_operation_button(operation):
     return tk.Button(root,
-                     font=('Arial', F),                         # шрифт кнопки
-                     text=operation,                            # добавляем символ цифры на кнопку
-                     activeforeground=AFCOLOR,                  # цвет текста кнопки при наведении курсора мыши
-                     fg=FCOLOR,                                 # цвет текста кнопки
-                     bd=BD,                                     # розмер граници кнопки
+                     font=('Arial', F),                   # шрифт кнопки
+                     text=operation,                      # добавляем символ цифры на кнопку
+                     activeforeground=AFCOLOR,            # цвет текста кнопки при наведении курсора мыши
+                     fg=FCOLOR,                           # цвет текста кнопки
+                     bd=BD,                               # розмер граници кнопки
                      command=lambda: add_operation(operation))  # в качестве исполняемой операции через lambda вызываем функцию add_operation()
-                                                                # lambda - чтоб функция add_operation() не выполнялась сразу при создании кнопки
+                                                          # lambda - чтоб функция add_operation() не выполнялась сразу при создании кнопки
+
+"""Функция добавления кнопки точки"""
+def add_dot_button(operation):
+    return tk.Button(root,
+              font=('Arial', F),                   # шрифт кнопки
+              text=operation,                      # добавляем символ цифры на кнопку
+              activeforeground=AFCOLOR,            # цвет текста кнопки при наведении курсора мыши
+              fg=FCOLOR,                           # цвет текста кнопки
+              bd=BD,                               # розмер граници кнопки
+              command=lambda: add_dot(operation))  # в качестве исполняемой операции через lambda вызываем функцию add_dot()
+                                                   # lambda - чтоб функция add_dot() не выполнялась сразу при создании кнопки
 
 """Функция добавления кнопки '=' - выполнение вычисления"""
 def add_calc_button(operation):
@@ -92,7 +117,7 @@ def add_clean_button(operation):
                      font=('Arial', F),                 # шрифт кнопки
                      text=operation,                    # добавляем символ цифры на кнопку
                      activeforeground=AFCOLOR,          # цвет текста кнопки при наведении курсора мыши
-                     fg=FCOLOR,                         # цвет текста кнопки
+                     fg='red',                          # цвет текста кнопки
                      bd=BD,                             # розмер граници кнопки
                      command=lambda: clean_calc())      # в качестве исполняемой операции через lambda вызываем функцию clean_calc()
                                                         # lambda - чтоб функция clean_calc() не выполнялась сразу при создании кнопки
@@ -108,7 +133,7 @@ def press_key(event):
 
 
 root = tk.Tk()                     # Создаем главное окно
-root.geometry('270x310+500+200')   # задаем размеры главного окна
+root.geometry('270x362+500+200')   # задаем размеры главного окна
 root.resizable(False, False)       # делаем окно неизменяемых размеров
 root.title('Калькулятор')          # задаем титульную надпись главного окна
 root.config(bg=BG)                 # задаем цвет главного окна
@@ -135,8 +160,11 @@ add_operation_button('-').grid(row=2, column=3, stick='wnes', padx=px, pady=py)
 add_operation_button('/').grid(row=3, column=3, stick='wnes', padx=px, pady=py)
 add_operation_button('*').grid(row=4, column=3, stick='wnes', padx=px, pady=py)
 
-add_clean_button('C').grid(row=4, column=1, stick='wnes', padx=px, pady=py) # создаем кнопку очистки экрана
+add_dot_button('.').grid(row=4, column=1, stick='wnes', padx=px, pady=py)   # создаем кнопку добавления точки
 add_calc_button('=').grid(row=4, column=2, stick='wnes', padx=px, pady=py)  # создаем кнопку '='
+
+add_clean_button('C').grid(row=5, column=0, columnspan=4 ,stick='wnes', padx=px, pady=py) # создаем кнопку очистки экрана
+
 
 root.grid_columnconfigure(0, minsize=60)  # задаем минимальные размеры столбцов
 root.grid_columnconfigure(1, minsize=60)
@@ -148,5 +176,6 @@ root.grid_rowconfigure(1, minsize=60)
 root.grid_rowconfigure(2, minsize=60)
 root.grid_rowconfigure(3, minsize=60)
 root.grid_rowconfigure(4, minsize=60)
+root.grid_rowconfigure(5, minsize=60)
 
 root.mainloop()                           # цикл главного окна
